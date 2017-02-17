@@ -12,7 +12,7 @@ setup() {
   npm install "$GIT_SRC_PROJECT_PATH" --save
   rm -rf "$GIT_TEST_PROJECT_PATH/.git"
   run npm uninstall git-client-hook --save
-  assert_output_contains "No ${GIT_TEST_PROJECT_PATH}/.git/hooks exist!"
+  assert_output_contains "No '.git' directory exist!"
 }
 
 @test "git-hook-uninstall: Hook uninstall" {

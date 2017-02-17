@@ -1,12 +1,19 @@
 #!/bin/bash
 
-INSTALL_PATH="$(cd "$(dirname "$0")" && pwd -P)"
-GIT_ROOT_DIR="$(git rev-parse --show-toplevel || echo "$INSTALL_PATH/../../..")"
+INSTALL_PATH=$(dirname "$0")
+GIT_ROOT_DIR=$(git rev-parse --show-toplevel || echo "$INSTALL_PATH/../../..")
 PROJECT_ROOT=${PROJECT_ROOT:-$(cd "$GIT_ROOT_DIR"; pwd -P)}
 FROM_HOOK_PATH="$INSTALL_PATH/hooks"
 TO_HOOK_PATH="$PROJECT_ROOT/.git/hooks"
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 AFFECT_HOOKFILES=$(ls "$TO_HOOK_PATH" "$FROM_HOOK_PATH" |grep -v "\." |sort |uniq)
+
+echo "INSTALL_PATH $INSTALL_PATH" >> ~/a.txt
+echo "GIT_ROOT_DIR $GIT_ROOT_DIR" >> ~/a.txt
+echo "PROJECT_ROOT $PROJECT_ROOT" >> ~/a.txt
+echo "FROM_HOOK_PATH $FROM_HOOK_PATH" >> ~/a.txt
+echo "TO_HOOK_PATH $TO_HOOK_PATH" >> ~/a.txt
+echo -e "" >> ~/a.txt
 
 is_node_env_dev() {
   node_env=$1
@@ -17,9 +24,9 @@ is_node_env_dev() {
 }
 
 has_git_hooks_path() {
-  git_hook_path=$1
-  if [ ! -d "$git_hook_path" ]; then
-    echo "No $git_hook_path exist!"
+  echo $1 >> ~/a.txt
+  if [ ! -d "$1" ]; then
+    echo "No '.git' directory exist!"
     exit 0
   fi
 }
@@ -34,17 +41,17 @@ do
     if [ -f "$FROM_HOOK_PATH/$hook_file" ]
     then
       diff_info=$(diff "$FROM_HOOK_PATH/$hook_file" "$TO_HOOK_PATH/$hook_file")
-      if [ ! -z "${diff_info}" ]
+      if [ ! -z "$diff_info" ]
       then
-        INSTALL_HOOKS+=(${hook_file})
-        EXIST_HOOKS+=(${hook_file})
+        INSTALL_HOOKS+=($hook_file)
+        EXIST_HOOKS+=($hook_file)
       fi
     else
-      EXIST_HOOKS+=(${hook_file})
+      EXIST_HOOKS+=($hook_file)
     fi
   elif [ -f "$FROM_HOOK_PATH/$hook_file" ]
   then
-    INSTALL_HOOKS+=(${hook_file})
+    INSTALL_HOOKS+=($hook_file)
   fi
 done
   
@@ -53,7 +60,7 @@ if [ ${#EXIST_HOOKS[@]} -gt 0 ]
 then
   for hook_file in ${EXIST_HOOKS[@]}
   do
-    echo "bak up ${hook_file}"
+    echo "bak up $hook_file"
     mv "$TO_HOOK_PATH/$hook_file" "$TO_HOOK_PATH/$hook_file.$TIMESTAMP"
   done
 fi
@@ -63,7 +70,7 @@ then
   echo -e "GIT CLIENT HOOK installing...! ⚙ \n"
   for hook_file in ${INSTALL_HOOKS[@]}
   do
-    echo "install ${hook_file}"
+    echo "install $hook_file"
     cp "$FROM_HOOK_PATH/$hook_file" "$TO_HOOK_PATH/$hook_file"
   done
   echo "GIT CLIENT HOOK install done!  🍻 "

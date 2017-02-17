@@ -8,9 +8,8 @@ TO_HOOK_PATH="$PROJECT_ROOT/.git/hooks"
 HOOK_FILE_NAMES=$(ls ${FROM_HOOK_PATH})
 
 has_git_hooks_path() {
-  git_hook_path=$1
-  if [ ! -d "$git_hook_path" ]; then
-    echo "No $git_hook_path exist!"
+  if [ ! -d "$1" ]; then
+    echo "No '.git' directory exist!"
     exit 0
   fi
 }

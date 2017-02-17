@@ -9,11 +9,11 @@ setup() {
 
 @test "git-hook-install: If no .git/ dir exist, hook will not install." {
   run npm install "$GIT_SRC_PROJECT_PATH" --save
-  assert_output_contains "No ${GIT_TEST_PROJECT_PATH}/.git/hooks exist!"
+  assert_output_contains "No '.git' directory exist!"
 
   git init
   run npm install "$GIT_SRC_PROJECT_PATH" --save
-  refute_output_contains "No ${GIT_TEST_PROJECT_PATH}/.git/hooks exist!"
+  refute_output_contains "No '.git' directory exist!"
 }
 
 @test "git-hook-install: Hook will install only when NODE_ENV equals undefined or development" {
