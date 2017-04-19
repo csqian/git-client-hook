@@ -11,16 +11,22 @@ setup() {
   git config user.name wangzengdi
   npm install "$GIT_SRC_PROJECT_PATH" --save
 
+  echo "${BATS_TMPDIR}"
+  BATS_TMPDIR="$BATS_TMPDIR"
   mkdir -p "$GIT_TEST_REPOSITORY_PATH"
-  git remote add origin "$GIT_TEST_REPOSITORY_PATH"
   cd "$GIT_TEST_REPOSITORY_PATH"
-  git init --bare
+  git init --bare repo.git
   cd "$GIT_TEST_PROJECT_PATH"
+  GIT_TEST_REPOSITORY_PATH="$GIT_TEST_REPOSITORY_PATH/repo.git"
+  git remote add origin $GIT_TEST_REPOSITORY_PATH
+  touch .gitignore
+  echo "node_modules" >> .gitignore
 }
 
 @test "pre-push: test push" {
+git co -b feature/TASK-9527
 git add .
 git commit -m "commit message"
-git push origin master
-assert_output_contains "error"
+run git push origin master
+assert_success
 }
